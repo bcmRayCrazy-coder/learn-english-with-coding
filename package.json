@@ -5,9 +5,8 @@
     "main": "src/main.ts",
     "author": "bcmray_crazy",
     "license": "MIT",
-    "type": "module",
     "scripts": {
-        "test": "ts-node src/main.ts test.lewc"
+        "test": "ts-node src/main.ts"
     },
     "devDependencies": {
         "@types/node": "^18.7.23",
