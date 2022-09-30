@@ -178,12 +178,23 @@ export class LEWCCompiler {
                         };
                         // 函数内部
                         token = tokens[++current];
+
                         // 括号未闭合
                         while (
                             token.type !== TokenType.Paren ||
                             (token.type === TokenType.Paren &&
                                 token.value !== ')')
                         ) {
+                            if (
+                                token.type === TokenType.Connect
+                            ) {
+                                // 连词
+
+                                node.params?.push({
+                                    type: TokenType.Connect,
+                                    value: tokens[current++].value,
+                                });
+                            }
                             node.params?.push(walk());
                             token = tokens[current];
                         }

@@ -6,4 +6,5 @@ var compiler = new LEWCCompiler(readFileSync(path.join(__dirname,'../test.lewc')
 var tokens = compiler.tokenize();
 console.log(tokens);
 var ast = compiler.parse(tokens);
-console.log(JSON.stringify(ast));
+console.log(ast);
+debugger;
