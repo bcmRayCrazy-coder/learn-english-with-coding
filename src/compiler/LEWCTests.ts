@@ -7,6 +7,8 @@ export default {
     STRINGSINGLEQUOTE: /'/,
     LEFTPAREN: /\(/,
     RIGHTPAREN: /\)/,
+    ENDPAREN: /\./,
     LETTERS: /[a-z]/i,
     CONNECT: CONNECTRegExp,
+    UPPERCASELETTER: /[A-Z]/
 };

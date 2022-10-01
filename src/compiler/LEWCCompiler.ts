@@ -53,6 +53,15 @@ export class LEWCCompiler {
                 });
                 current++;
                 continue;
+            } else if(tests.ENDPAREN.test(char)){
+                // 句号
+
+                tokens.push({
+                    type: TokenType.Paren,
+                    value: '.',
+                });
+                current++;
+                continue;
             } else if (tests.WHITESPACE.test(char)) {
                 // 空格
 
@@ -104,10 +113,42 @@ export class LEWCCompiler {
 
                 tokens.push({ type: TokenType.String, value });
                 continue;
-            } else if (tests.LETTERS.test(char)) {
+            } else if (tests.UPPERCASELETTER.test(char)) {
                 // 函数名
 
                 var value = '';
+
+                // 转小写
+                char = this.input[current++];
+                value += char.toLowerCase();
+
+                char = this.input[current];
+
+                while (tests.LETTERS.test(char)) {
+                    value += char;
+                    char = this.input[++current];
+                }
+
+                if (tests.CONNECT.test(value)) {
+                    // 连接符
+
+                    tokens.push({
+                        type: TokenType.Connect,
+                        value,
+                    });
+                } else {
+                    tokens.push({
+                        type: TokenType.CallExpressionAtTokenize,
+                        value,
+                    });
+                }
+                current++;
+                continue;
+            }else if (tests.LETTERS.test(char)) {
+                // 函数名写法2
+
+                var value = '';
+
                 while (tests.LETTERS.test(char)) {
                     value += char;
                     char = this.input[++current];
@@ -202,6 +243,45 @@ export class LEWCCompiler {
                         current++;
                         return node;
                     }
+
+                case TokenType.CallExpressionAtTokenize:
+                    if (LEWCTests.LETTERS.test(token.value)) {
+                        // 向下解析
+                        token = tokens[current];
+
+                        // 函数
+                        var node: AstBody = {
+                            type: TokenType.CallExpression,
+                            name: token.value,
+                            params: [],
+                        };
+                        // 函数内部
+                        token = tokens[++current];
+
+                        // 括号未闭合
+                        while (
+                            token.type !== TokenType.Paren ||
+                            (token.type === TokenType.Paren &&
+                                token.value !== '.')
+                        ) {
+                            if (
+                                token.type === TokenType.Connect
+                            ) {
+                                // 连词
+
+                                node.params?.push({
+                                    type: TokenType.Connect,
+                                    value: tokens[current++].value,
+                                });
+                            }
+                            node.params?.push(walk());
+                            token = tokens[current];
+                        }
+
+                        current++;
+                        return node;
+                    }
+
 
                 default:
                     throw new TypeError(

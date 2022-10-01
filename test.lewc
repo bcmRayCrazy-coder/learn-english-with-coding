@@ -1,2 +1,2 @@
-(add 2 and (subtract 5 from 2))
-(say "hello")
+Add 2 and (subtract 5 from 2).
+Say "hello".

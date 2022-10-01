@@ -4,5 +4,6 @@ export enum TokenType {
     String='String',
     Number = 'Number',
     Name = 'name',
-    Connect = 'connect'
+    Connect = 'connect',
+    CallExpressionAtTokenize = 'CallExpression@tokenize'
 }
