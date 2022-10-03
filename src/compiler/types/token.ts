@@ -1,6 +1,6 @@
-import { TokenType } from "./tokenType";
+import { TokenType } from './tokenType';
 
 export interface token {
-    type:TokenType,
-    value:string
+    type: TokenType;
+    value: string;
 }

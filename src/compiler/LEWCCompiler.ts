@@ -1,5 +1,5 @@
 import LEWCTests from './LEWCTests';
-import { AST, AstBody, ASTTypes } from './types/ast';
+import { AST, AstBody, ASTTypes, AstVisitorValue } from './types/ast';
 import { token } from './types/token';
 import { TokenType } from './types/tokenType';
 
@@ -53,7 +53,7 @@ export class LEWCCompiler {
                 });
                 current++;
                 continue;
-            } else if(tests.ENDPAREN.test(char)){
+            } else if (tests.ENDPAREN.test(char)) {
                 // 句号
 
                 tokens.push({
@@ -144,7 +144,7 @@ export class LEWCCompiler {
                 }
                 current++;
                 continue;
-            }else if (tests.LETTERS.test(char)) {
+            } else if (tests.LETTERS.test(char)) {
                 // 函数名写法2
 
                 var value = '';
@@ -226,9 +226,7 @@ export class LEWCCompiler {
                             (token.type === TokenType.Paren &&
                                 token.value !== ')')
                         ) {
-                            if (
-                                token.type === TokenType.Connect
-                            ) {
+                            if (token.type === TokenType.Connect) {
                                 // 连词
 
                                 node.params?.push({
@@ -264,9 +262,7 @@ export class LEWCCompiler {
                             (token.type === TokenType.Paren &&
                                 token.value !== '.')
                         ) {
-                            if (
-                                token.type === TokenType.Connect
-                            ) {
+                            if (token.type === TokenType.Connect) {
                                 // 连词
 
                                 node.params?.push({
@@ -282,7 +278,6 @@ export class LEWCCompiler {
                         return node;
                     }
 
-
                 default:
                     throw new TypeError(
                         '未知类型: ' +
@@ -297,5 +292,52 @@ export class LEWCCompiler {
             ast.body.push(walk());
         }
         return ast;
+    }
+
+    traverser(ast: AST, visitor: Record<TokenType, AstVisitorValue>) {
+        function traverseArray(array: AstBody[], parent: AstBody | AST) {
+            array.forEach((child) => {
+                traverseNode(child, parent);
+            });
+        }
+
+        function traverseNode(
+            node: AstBody | AST,
+            parent: AstBody | AST | null
+        ) {
+            var methods = visitor[node.type];
+
+            // 拥有对应入口函数
+            if (methods && methods.enter) {
+                methods.enter(node, parent);
+            }
+
+            // 分割
+            switch (node.type) {
+                case ASTTypes.PROGRAM:
+                    if (node.body) traverseArray(node.body, node);
+
+                    break;
+
+                case TokenType.CallExpression:
+                    if (node.params) traverseArray(node.params, node);
+                    break;
+
+                case TokenType.Number:
+                case TokenType.String:
+                case TokenType.Connect:
+                    // 不是函数,跳过
+                    break;
+
+                default:
+                    throw new TypeError('未知的类型: ' + node.type);
+            }
+
+            // 出口
+            if (methods && methods.exit) {
+                methods.exit(node, parent);
+            }
+        }
+        traverseNode(ast, null);
     }
 }

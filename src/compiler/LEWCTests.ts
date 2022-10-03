@@ -1,4 +1,4 @@
-import { CONNECTRegExp } from "./types/connects";
+import { CONNECTRegExp } from './types/connects';
 
 export default {
     WHITESPACE: /\s/,
@@ -10,5 +10,5 @@ export default {
     ENDPAREN: /\./,
     LETTERS: /[a-z]/i,
     CONNECT: CONNECTRegExp,
-    UPPERCASELETTER: /[A-Z]/
+    UPPERCASELETTER: /[A-Z]/,
 };

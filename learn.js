@@ -379,7 +379,6 @@
 // We start by accepting an input string of code, and we're gonna set up two
 // things...
 function tokenizer(input) {
-
     // A `current` variable for tracking our position in the code like a cursor.
     let current = 0;
 
@@ -392,7 +391,6 @@ function tokenizer(input) {
     // We do this because we may want to increment `current` many times within a
     // single loop because our tokens can be any length.
     while (current < input.length) {
-
         // We're also going to store the `current` character in the `input`.
         let char = input[current];
 
@@ -402,7 +400,6 @@ function tokenizer(input) {
         //
         // We check to see if we have an open parenthesis:
         if (char === '(') {
-
             // If we do, we push a new token with the type `paren` and set the value
             // to an open parenthesis.
             tokens.push({
@@ -453,7 +450,6 @@ function tokenizer(input) {
         // So we start this off when we encounter the first number in a sequence.
         let NUMBERS = /[0-9]/;
         if (NUMBERS.test(char)) {
-
             // We're going to create a `value` string that we are going to push
             // characters to.
             let value = '';
@@ -553,14 +549,12 @@ function tokenizer(input) {
 
 // Okay, so we define a `parser` function that accepts our array of `tokens`.
 function parser(tokens) {
-
     // Again we keep a `current` variable that we will use as a cursor.
     let current = 0;
 
     // But this time we're going to use recursion instead of a `while` loop. So we
     // define a `walk` function.
     function walk() {
-
         // Inside the walk function we start by grabbing the `current` token.
         let token = tokens[current];
 
@@ -569,7 +563,6 @@ function parser(tokens) {
         //
         // We test to see if we have a `number` token.
         if (token.type === 'number') {
-
             // If we have one, we'll increment `current`.
             current++;
 
@@ -594,11 +587,7 @@ function parser(tokens) {
 
         // Next we're going to look for CallExpressions. We start this off when we
         // encounter an open parenthesis.
-        if (
-            token.type === 'paren' &&
-            token.value === '('
-        ) {
-
+        if (token.type === 'paren' && token.value === '(') {
             // We'll increment `current` to skip the parenthesis since we don't care
             // about it in our AST.
             token = tokens[++current];
@@ -650,7 +639,7 @@ function parser(tokens) {
             // token with a `type` of `'paren'` and a `value` of a closing
             // parenthesis.
             while (
-                (token.type !== 'paren') ||
+                token.type !== 'paren' ||
                 (token.type === 'paren' && token.value !== ')')
             ) {
                 // we'll call the `walk` function which will return a `node` and we'll
@@ -741,11 +730,10 @@ function parser(tokens) {
 // So we define a traverser function which accepts an AST and a
 // visitor. Inside we're going to define two functions...
 function traverser(ast, visitor) {
-
     // A `traverseArray` function that will allow us to iterate over an array and
     // call the next function that we will define: `traverseNode`.
     function traverseArray(array, parent) {
-        array.forEach(child => {
+        array.forEach((child) => {
             traverseNode(child, parent);
         });
     }
@@ -753,7 +741,6 @@ function traverser(ast, visitor) {
     // `traverseNode` will accept a `node` and its `parent` node. So that it can
     // pass both to our visitor methods.
     function traverseNode(node, parent) {
-
         // We start by testing for the existence of a method on the visitor with a
         // matching `type`.
         let methods = visitor[node.type];
@@ -766,7 +753,6 @@ function traverser(ast, visitor) {
 
         // Next we are going to split things up by the current node type.
         switch (node.type) {
-
             // We'll start with our top level `Program`. Since Program nodes have a
             // property named body that has an array of nodes, we will call
             // `traverseArray` to traverse down into them.
@@ -777,19 +763,19 @@ function traverser(ast, visitor) {
                 traverseArray(node.body, node);
                 break;
 
-                // Next we do the same with `CallExpression` and traverse their `params`.
+            // Next we do the same with `CallExpression` and traverse their `params`.
             case 'CallExpression':
                 traverseArray(node.params, node);
                 break;
 
-                // In the cases of `NumberLiteral` and `StringLiteral` we don't have any
-                // child nodes to visit, so we'll just break.
+            // In the cases of `NumberLiteral` and `StringLiteral` we don't have any
+            // child nodes to visit, so we'll just break.
             case 'NumberLiteral':
             case 'StringLiteral':
                 break;
 
-                // And again, if we haven't recognized the node type then we'll throw an
-                // error.
+            // And again, if we haven't recognized the node type then we'll throw an
+            // error.
             default:
                 throw new TypeError(node.type);
         }
@@ -856,7 +842,6 @@ function traverser(ast, visitor) {
 
 // So we have our transformer function which will accept the lisp ast.
 function transformer(ast) {
-
     // We'll create a `newAst` which like our previous AST will have a program
     // node.
     let newAst = {
@@ -875,7 +860,6 @@ function transformer(ast) {
 
     // We'll start by calling the traverser function with our ast and a visitor.
     traverser(ast, {
-
         // The first visitor method accepts any `NumberLiteral`
         NumberLiteral: {
             // We'll visit them on enter.
@@ -902,7 +886,6 @@ function transformer(ast) {
         // Next up, `CallExpression`.
         CallExpression: {
             enter(node, parent) {
-
                 // We start creating a new node `CallExpression` with a nested
                 // `Identifier`.
                 let expression = {
@@ -922,7 +905,6 @@ function transformer(ast) {
                 // Then we're going to check if the parent node is a `CallExpression`.
                 // If it is not...
                 if (parent.type !== 'CallExpression') {
-
                     // We're going to wrap our `CallExpression` node with an
                     // `ExpressionStatement`. We do this because the top level
                     // `CallExpression` in JavaScript are actually statements.
@@ -936,7 +918,7 @@ function transformer(ast) {
                 // `context`.
                 parent._context.push(expression);
             },
-        }
+        },
     });
 
     // At the end of our transformer function we'll return the new ast that we
@@ -959,50 +941,45 @@ function transformer(ast) {
  */
 
 function codeGenerator(node) {
-
     // We'll break things down by the `type` of the `node`.
     switch (node.type) {
-
         // If we have a `Program` node. We will map through each node in the `body`
         // and run them through the code generator and join them with a newline.
         case 'Program':
-            return node.body.map(codeGenerator)
-                .join('\n');
+            return node.body.map(codeGenerator).join('\n');
 
-            // For `ExpressionStatement` we'll call the code generator on the nested
-            // expression and we'll add a semicolon...
+        // For `ExpressionStatement` we'll call the code generator on the nested
+        // expression and we'll add a semicolon...
         case 'ExpressionStatement':
             return (
-                codeGenerator(node.expression) +
-                ';' // << (...because we like to code the *correct* way)
+                codeGenerator(node.expression) + ';' // << (...because we like to code the *correct* way)
             );
 
-            // For `CallExpression` we will print the `callee`, add an open
-            // parenthesis, we'll map through each node in the `arguments` array and run
-            // them through the code generator, joining them with a comma, and then
-            // we'll add a closing parenthesis.
+        // For `CallExpression` we will print the `callee`, add an open
+        // parenthesis, we'll map through each node in the `arguments` array and run
+        // them through the code generator, joining them with a comma, and then
+        // we'll add a closing parenthesis.
         case 'CallExpression':
             return (
                 codeGenerator(node.callee) +
                 '(' +
-                node.arguments.map(codeGenerator)
-                .join(', ') +
+                node.arguments.map(codeGenerator).join(', ') +
                 ')'
             );
 
-            // For `Identifier` we'll just return the `node`'s name.
+        // For `Identifier` we'll just return the `node`'s name.
         case 'Identifier':
             return node.name;
 
-            // For `NumberLiteral` we'll just return the `node`'s value.
+        // For `NumberLiteral` we'll just return the `node`'s value.
         case 'NumberLiteral':
             return node.value;
 
-            // For `StringLiteral` we'll add quotations around the `node`'s value.
+        // For `StringLiteral` we'll add quotations around the `node`'s value.
         case 'StringLiteral':
             return '"' + node.value + '"';
 
-            // And if we haven't recognized the node, we'll throw an error.
+        // And if we haven't recognized the node, we'll throw an error.
         default:
             throw new TypeError(node.type);
     }

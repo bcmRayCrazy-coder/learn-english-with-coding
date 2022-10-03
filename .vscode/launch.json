@@ -8,13 +8,8 @@
             "name": "ts-node",
             "type": "node",
             "request": "launch",
-            "args": [
-                "src/main.ts"
-            ],
-            "runtimeArgs": [
-                "-r",
-                "ts-node/register"
-            ],
+            "args": ["src/main.ts"],
+            "runtimeArgs": ["-r", "ts-node/register"],
             "cwd": "${workspaceRoot}",
             "internalConsoleOptions": "openOnSessionStart"
         }
