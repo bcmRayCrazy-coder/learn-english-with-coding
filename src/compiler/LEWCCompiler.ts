@@ -1,5 +1,6 @@
 import LEWCTests from './LEWCTests';
 import { AST, AstBody, ASTTypes, AstVisitorValue } from './types/ast';
+import { CalleeType } from './types/calleeType';
 import { token } from './types/token';
 import { TokenType } from './types/tokenType';
 
@@ -339,5 +340,65 @@ export class LEWCCompiler {
             }
         }
         traverseNode(ast, null);
+    }
+
+    transformer(ast: AST) {
+        let newAst: AST = {
+            type: ASTTypes.PROGRAM,
+            body: [],
+        };
+        ast._context = newAst.body;
+        this.traverser(ast, {
+            [TokenType.Number]: {
+                enter(node, parent) {
+                    if (parent?._context) {
+                        parent._context.push({
+                            type: TokenType.Number,
+                            value: node.value,
+                        });
+                    }
+                },
+            },
+            [TokenType.String]: {
+                enter(node, parent) {
+                    if (parent?._context) {
+                        parent._context.push({
+                            type: TokenType.String,
+                            value: node.value,
+                        });
+                    }
+                },
+            },
+            [TokenType.CallExpression]: {
+                enter(node, parent) {
+                    if (node.name) {
+                        let expression: AstBody = {
+                            type: TokenType.CallExpression,
+                            callee: {
+                                type: CalleeType.Identifier,
+                                name: node.name,
+                            },
+                            arguments: [],
+                        };
+                        node._context = expression.arguments;
+                        if (parent?.type !== TokenType.CallExpression) {
+                            expression = {
+                                type: TokenType.ExpressionStatement,
+                                expression: expression,
+                            };
+                        }
+                        parent?._context?.push(expression);
+                    }
+                },
+            },
+            [TokenType.Paren]: {},
+            [TokenType.Name]: {},
+            [TokenType.Connect]: {},
+            [TokenType.CallExpressionAtTokenize]: {},
+            [TokenType.Program]: {},
+            [TokenType.ExpressionStatement]: {},
+        });
+
+        return newAst;
     }
 }

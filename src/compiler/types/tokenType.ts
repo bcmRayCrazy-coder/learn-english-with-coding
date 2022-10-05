@@ -7,4 +7,5 @@ export enum TokenType {
     Connect = 'connect',
     CallExpressionAtTokenize = 'CallExpression@tokenize',
     Program = 'Program',
+    ExpressionStatement = 'ExpressionStatement',
 }
