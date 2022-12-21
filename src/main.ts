@@ -9,4 +9,5 @@ var tokens = compiler.tokenize();
 console.log(tokens);
 var ast = compiler.parse(tokens);
 console.log(ast);
+compiler.run(ast);
 debugger;

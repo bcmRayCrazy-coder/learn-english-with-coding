@@ -1,4 +1,6 @@
 import LEWCTests from './LEWCTests';
+import { generate } from './lib/generater';
+import { CallMappings } from './lib/lib';
 import { AST, AstBody, ASTTypes, AstVisitorValue } from './types/ast';
 import { CalleeType } from './types/calleeType';
 import { token } from './types/token';
@@ -273,6 +275,7 @@ export class LEWCCompiler {
                             }
                             node.params?.push(walk());
                             token = tokens[current];
+                            if(!token) throw new Error('缺少句末标点符号!');
                         }
 
                         current++;
@@ -397,8 +400,25 @@ export class LEWCCompiler {
             [TokenType.CallExpressionAtTokenize]: {},
             [TokenType.Program]: {},
             [TokenType.ExpressionStatement]: {},
+            [TokenType.Void]:{}
         });
 
         return newAst;
+    }
+
+    run(node: AST | AstBody) {
+        // 运行程序
+        switch (node.type) {
+            case ASTTypes.PROGRAM:
+                node.body.map(this.generate);
+                break;
+
+            default:
+                throw new Error('未知的类型: ' + node);
+        }
+    }
+    generate(node:AstBody):AstBody{
+        // 将内嵌语句转为定值
+        return generate(node);
     }
 }

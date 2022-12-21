@@ -1,2 +1,2 @@
-Add 2 and (subtract 5 from 2).
-Say "hello".
+Say (add 2 and (subtract 5 from 2)).
+Say "Hello world!".

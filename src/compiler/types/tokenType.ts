@@ -8,4 +8,5 @@ export enum TokenType {
     CallExpressionAtTokenize = 'CallExpression@tokenize',
     Program = 'Program',
     ExpressionStatement = 'ExpressionStatement',
+    Void = 'Void'
 }
