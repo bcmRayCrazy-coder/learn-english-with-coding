@@ -1,2 +1,5 @@
+Set "var a" to 114.
 Say (add 2 and (subtract 5 from 2)).
 Say "Hello world!".
+Say (get "var a").
+Say (add (get "var a") and 9999).
